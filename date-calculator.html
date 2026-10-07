@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Calculator - Days From Now | MBW Tools</title>
+<meta name="description" content="Free online date calculator. Enter any number of days to see what date it is from today, or from a specific start date. Accounts for leap years and month lengths.">
+<meta name="keywords" content="date calculator,days from now,days from today,future date calculator,days from specific date">
+<link rel="canonical" href="https://mbw.vip/date-calculator/">
+
+<link rel="alternate" hreflang="en" href="https://mbw.vip/date-calculator/">
+<link rel="alternate" hreflang="zh-CN" href="https://mbw.vip/zh/date-calculator/">
+<link rel="alternate" hreflang="x-default" href="https://mbw.vip/date-calculator/">
+
+<script src="/shared/analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Date Calculator - Days From Now",
+  "url": "https://mbw.vip/date-calculator/",
+  "description": "Free online date calculator. Enter any number of days to see what date it is from today, or from a specific start date.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How does the date calculator work?", "acceptedAnswer": { "@type": "Answer", "text": "Enter a number of days. The tool adds that number to today's date, or to a start date you choose, accounting for leap years and month lengths." } },
+    { "@type": "Question", "name": "Can I calculate a date in the past?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Enter a negative number to see how many days before today." } },
+    { "@type": "Question", "name": "Can I calculate from a specific date instead of today?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Change the start date in the input above. The result will update automatically. A progress bar will appear showing how much time has passed and how much is left." } },
+    { "@type": "Question", "name": "Does it use my local date and time zone?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The calculation uses your device's local date and time zone." } },
+    { "@type": "Question", "name": "What is the difference between calendar days and business days?", "acceptedAnswer": { "@type": "Answer", "text": "This tool counts calendar days, including weekends and holidays. If you need business days only, you need to subtract weekends manually." } },
+    { "@type": "Question", "name": "Does it handle leap years?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The calculation uses JavaScript's built-in Date object, which automatically accounts for leap years, including February 29." } },
+    { "@type": "Question", "name": "Why does the result sometimes differ by one day from what I expected?", "acceptedAnswer": { "@type": "Answer", "text": "This usually happens when the starting date is counted differently. Some people count today as day 1. This tool treats today as day 0 and adds the full number of days." } },
+    { "@type": "Question", "name": "Is it free?", "acceptedAnswer": { "@type": "Answer", "text": "Completely free. No sign-up, no usage limit." } }
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="/shared/app.css">
+</head>
+
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="nav-left">
+      <a href="/" class="logo">
+        <span class="logo-icon">🧭</span>
+        MBW Tools
+      </a>
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/tools/image-compress.html">Image Compress</a></li>
+        <li><a href="/tools/word-counter.html">Word Counter</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <button class="lang-btn" id="langBtn">🌐 English ▾</button>
+        <div class="lang-dropdown" id="langDropdown">
+          <a href="/date-calculator/" class="active">English</a>
+          <a href="/zh/date-calculator/">中文</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Date Calculator</h1>
+    <p class="subtitle">Enter any number of days to see what date it is from today, or from a specific start date.</p>
+  </div>
+</section>
+
+<!-- ===== 工具主体 ===== -->
+<section class="tools-section" style="max-width:720px;">
+
+  <!-- 输入行：起始日期 + 天数 -->
+  <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:160px;">
+      <label for="startDate" style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Start date (optional)</label>
+      <input type="date" id="startDate" value=""
+        style="width:100%;padding:10px 14px;font-size:15px;border:1.5px solid var(--border-medium);border-radius:12px;outline:none;font-family:var(--font);background:#fff;transition:border-color .15s;">
+    </div>
+    <div style="flex:1;min-width:120px;">
+      <label for="daysInput" style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Days</label>
+      <input type="number" id="daysInput" value="100" min="-3650" max="3650"
+        style="width:100%;padding:10px 14px;font-size:15px;border:1.5px solid var(--border-medium);border-radius:12px;outline:none;font-family:var(--font);background:#fff;transition:border-color .15s;">
+    </div>
+    <button id="calcBtn" class="btn-primary" style="padding:10px 22px;font-size:14px;height:42px;">Calculate</button>
+  </div>
+
+  <!-- 答案卡片 -->
+  <div style="background:var(--brand-light);border:1.5px solid var(--brand);border-radius:20px;padding:36px 28px;text-align:center;margin-bottom:24px;">
+    <div id="answerLabel" style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">100 days from today is</div>
+    <div id="answerDate" style="font-size:34px;font-weight:800;color:var(--brand);letter-spacing:-0.5px;line-height:1.2;">—</div>
+    <div id="answerDay" style="font-size:15px;color:var(--text-secondary);margin-top:8px;">—</div>
+  </div>
+
+  <!-- ===== 条件进度条：仅当用户把起始日期改成非今天时才显示 ===== -->
+  <div id="progressWrap" style="display:none;background:#fff;border:1px solid var(--border-light);border-radius:16px;padding:20px 22px;margin-bottom:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:13px;color:var(--text-secondary);">
+      <span id="progressStartLabel">Start</span>
+      <span id="progressEndLabel">End</span>
+    </div>
+    <div style="position:relative;height:10px;background:#f0f0f5;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+      <div id="progressBar" style="position:absolute;top:0;left:0;height:100%;width:0%;background:var(--brand);border-radius:10px;transition:width .3s ease;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-secondary);">
+      <span id="progressPassed">—</span>
+      <span id="progressPercent" style="font-weight:700;color:var(--brand);">0%</span>
+      <span id="progressLeft">—</span>
+    </div>
+    <div id="progressStatus" style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:8px;"></div>
+  </div>
+
+  <!-- 附加信息网格 -->
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:36px;">
+    <div style="background:var(--bg-subtle);border-radius:14px;padding:16px;">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Today's date</div>
+      <div id="todayDate" style="font-size:16px;font-weight:700;color:var(--text-primary);">—</div>
+    </div>
+    <div style="background:var(--bg-subtle);border-radius:14px;padding:16px;">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Days from now</div>
+      <div id="daysValue" style="font-size:16px;font-weight:700;color:var(--text-primary);">—</div>
+    </div>
+    <div style="background:var(--bg-subtle);border-radius:14px;padding:16px;">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Week number</div>
+      <div id="weekNumber" style="font-size:16px;font-weight:700;color:var(--text-primary);">—</div>
+    </div>
+    <div style="background:var(--bg-subtle);border-radius:14px;padding:16px;">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Days remaining in target year</div>
+      <div id="daysRemaining" style="font-size:16px;font-weight:700;color:var(--text-primary);">—</div>
+    </div>
+  </div>
+
+  <!-- ===== Who uses this calculator ===== -->
+  <div class="content-block" style="border-top:1px solid var(--border-light);padding-top:28px;margin-bottom:40px;">
+    <h2 style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Who uses this calculator</h2>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.8;margin-bottom:20px;">
+      Most people use this tool because a document gives them a number of days, not a date. They have a starting point in hand — a signature date, a procedure date, a project kickoff — and they need to know where the deadline actually lands on the calendar. Here are the situations that come up most often.
+    </p>
+
+    <div style="display:flex;flex-direction:column;gap:18px;">
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Contracts and legal deadlines</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          A contract says delivery must happen within 90 days of signing. The signing date is March 15. You need to know the exact delivery deadline. Counting from today would give the wrong date — you need to count from the signing date.
+        </p>
+      </div>
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Medical and pregnancy timelines</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          A doctor schedules a follow-up 280 days after the first day of the last menstrual period. That first day is a fixed date in the past, not today. You need the exact date of the follow-up visit.
+        </p>
+      </div>
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Project milestones</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          A project kicks off on a specific date. The first milestone is due "100 days after kickoff". You need the calendar date, not the number of days, to schedule reviews and align the team.
+        </p>
+      </div>
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Visa and immigration windows</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          A visa is approved on a certain date and is valid for 100 days from approval. You need to know the last day you can enter, not the number of days remaining.
+        </p>
+      </div>
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Course and exam schedules</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          A course starts on a fixed date, and the exam is scheduled 100 days after the start. You need the exam date to plan revision and book time off.
+        </p>
+      </div>
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Billing and payment terms</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          An invoice is issued on a specific date and payment is due 30 days later. You need the due date to avoid late fees, not the number of days left.
+        </p>
+      </div>
+
+      <div style="background:var(--bg-subtle);border-radius:14px;padding:18px 20px;">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Audit and historical review</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">
+          An audit or legal review asks: "What date was 100 days after January 1, 2024?" You are working backwards from a historical starting point. Today's date is irrelevant.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 常见天数快捷入口 ===== -->
+  <div class="content-block" style="border-top:1px solid var(--border-light);padding-top:24px;margin-bottom:40px;">
+    <h2 style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">Popular dates</h2>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px;">
+      These are some of the most commonly searched day counts. Click any to see the exact date.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+      <a href="/date-calculator/10-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">10 Days From Now</a>
+      <a href="/date-calculator/30-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">30 Days From Now</a>
+      <a href="/date-calculator/45-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">45 Days From Now</a>
+      <a href="/date-calculator/60-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">60 Days From Now</a>
+      <a href="/date-calculator/90-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">90 Days From Now</a>
+      <a href="/date-calculator/100-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">100 Days From Now</a>
+      <a href="/date-calculator/120-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">120 Days From Now</a>
+      <a href="/date-calculator/180-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">180 Days From Now</a>
+      <a href="/date-calculator/200-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">200 Days From Now</a>
+      <a href="/date-calculator/300-days-from-now/" style="display:block;padding:12px 14px;background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:14px;font-weight:600;">300 Days From Now</a>
+    </div>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-top:16px;">
+      Need a number that is not listed? Use the input box above to calculate any number of days.
+    </p>
+  </div>
+
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq-section">
+  <div class="section-header">
+    <h2 style="font-size:22px;font-weight:800;color:var(--text-primary);">FAQ</h2>
+  </div>
+  <div class="faq-card">
+    <details open>
+      <summary>How does the date calculator work?</summary>
+      <p>Enter a number of days. The tool adds that number to today's date, or to a start date you choose, accounting for leap years and month lengths.</p>
+    </details>
+    <details>
+      <summary>Can I calculate a date in the past?</summary>
+      <p>Yes. Enter a negative number to see how many days before today.</p>
+    </details>
+    <details>
+      <summary>Can I calculate from a specific date instead of today?</summary>
+      <p>Yes. Change the start date in the input above. The result will update automatically. A progress bar will appear showing how much time has passed and how much is left.</p>
+    </details>
+    <details>
+      <summary>Does it use my local date and time zone?</summary>
+      <p>Yes. The calculation uses your device's local date and time zone.</p>
+    </details>
+    <details>
+      <summary>What is the difference between calendar days and business days?</summary>
+      <p>This tool counts calendar days, including weekends and holidays. If you need business days only, you need to subtract weekends manually.</p>
+    </details>
+    <details>
+      <summary>Does it handle leap years?</summary>
+      <p>Yes. The calculation uses JavaScript's built-in Date object, which automatically accounts for leap years, including February 29.</p>
+    </details>
+    <details>
+      <summary>Why does the result sometimes differ by one day from what I expected?</summary>
+      <p>This usually happens when the starting date is counted differently. Some people count today as day 1. This tool treats today as day 0 and adds the full number of days.</p>
+    </details>
+    <details>
+      <summary>Is it free?</summary>
+      <p>Completely free. No sign-up, no usage limit.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>MBW Tools · Local only, no data collected</span>
+    <span><a href="mailto:hi@mbw.vip" style="color:var(--brand);text-decoration:none;">hi@mbw.vip</a></span>
+  </div>
+</footer>
+
+<script>
+(function() {
+  "use strict";
+
+  var DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var MONTH_NAMES = ["January","February","March","April","May","June",
+                     "July","August","September","October","November","December"];
+  var MAX_DAYS = 3650;
+
+  var startDateInput = document.getElementById("startDate");
+  var daysInput = document.getElementById("daysInput");
+  var progressWrap = document.getElementById("progressWrap");
+
+  function pad2(n) { return String(n).padStart(2, "0"); }
+
+  function formatDate(d) {
+    return MONTH_NAMES[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+  }
+
+  function formatDateShort(d) {
+    return MONTH_NAMES[d.getMonth()].substring(0, 3) + " " + d.getDate() + ", " + d.getFullYear();
+  }
+
+  function getWeekNumber(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+
+  function daysRemainingInYear(d) {
+    var end = new Date(d.getFullYear(), 11, 31);
+    var start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    return Math.round((end - start) / 86400000);
+  }
+
+  function parseLocalDate(str) {
+    if (!str || typeof str !== "string") return null;
+    var parts = str.split("-");
+    if (parts.length !== 3) return null;
+
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    var d = parseInt(parts[2], 10);
+
+    if (isNaN(y) || isNaN(m) || isNaN(d)) return null;
+    if (y < 1900 || y > 2200) return null;
+    if (m < 1 || m > 12) return null;
+    if (d < 1 || d > 31) return null;
+
+    var date = new Date(y, m - 1, d);
+    if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+      return null;
+    }
+
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  function toDateInputValue(d) {
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  }
+
+  // ===== 主逻辑 =====
+  // forceShowProgress: true 强制显示进度条；false / undefined 按 UI 状态自动判断
+  function recalculate(forceShowProgress) {
+    var days = parseInt(daysInput.value, 10);
+    if (isNaN(days)) days = 0;
+    if (days > MAX_DAYS) days = MAX_DAYS;
+    if (days < -MAX_DAYS) days = -MAX_DAYS;
+    daysInput.value = days;
+
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var todayValue = toDateInputValue(today);
+
+    // 读日期框里的值。如果为空，说明用户清空了 → 当作“未设置”，用今天做基准
+    var startDateStr = startDateInput.value;
+    var startDate = parseLocalDate(startDateStr);
+    var hasValidStart = startDate !== null;
+
+    // 判断这个日期是不是“今天”
+    var isToday = hasValidStart && toDateInputValue(startDate) === todayValue;
+
+    // 基准日：如果日期框里有合法日期就用它，否则用今天
+    var baseDate = hasValidStart ? startDate : today;
+
+    var target = new Date(baseDate);
+    target.setDate(target.getDate() + days);
+
+    // 答案文案：日期是今天（或未设置）→ "from today"；否则 → "from Oct 7, 2026"
+    var useTodayLabel = !hasValidStart || isToday;
+    document.getElementById("answerLabel").textContent = useTodayLabel
+      ? days + " days from today is"
+      : days + " days from " + formatDateShort(baseDate) + " is";
+
+    document.getElementById("answerDate").textContent = formatDate(target);
+    document.getElementById("answerDay").textContent = DAY_NAMES[target.getDay()];
+
+    document.getElementById("todayDate").textContent = formatDate(today);
+    document.getElementById("daysValue").textContent = days + " days";
+    document.getElementById("weekNumber").textContent = "Week " + getWeekNumber(target);
+    document.getElementById("daysRemaining").textContent = daysRemainingInYear(target) + " days";
+
+    // ===== 进度条显示条件 =====
+    // 1. 强制显示（forceShowProgress === true）
+    // 2. 或者：日期框有合法日期，且不是今天
+    var shouldShowProgress = (forceShowProgress === true) || (hasValidStart && !isToday);
+
+    if (!shouldShowProgress) {
+      progressWrap.style.display = "none";
+      return;
+    }
+
+    progressWrap.style.display = "block";
+
+    var totalDays = days;
+    var progressBar = document.getElementById("progressBar");
+    var progressPercent = document.getElementById("progressPercent");
+    var progressPassed = document.getElementById("progressPassed");
+    var progressLeft = document.getElementById("progressLeft");
+    var progressStatus = document.getElementById("progressStatus");
+
+    document.getElementById("progressStartLabel").textContent = formatDateShort(baseDate);
+    document.getElementById("progressEndLabel").textContent = formatDateShort(target);
+
+    if (totalDays <= 0) {
+      progressStatus.textContent = "No forward range to track";
+      if (today < target) {
+        progressBar.style.width = "0%";
+        progressPercent.textContent = "0%";
+        progressPassed.textContent = "0 days passed";
+        progressLeft.textContent = Math.abs(totalDays) + " days until target";
+      } else {
+        progressBar.style.width = "100%";
+        progressPercent.textContent = "100%";
+        progressPassed.textContent = "Completed";
+        progressLeft.textContent = "0 days left";
+      }
+      return;
+    }
+
+    var passedDays = Math.round((today - baseDate) / 86400000);
+    var leftDays = totalDays - passedDays;
+
+    if (passedDays < 0) {
+      progressBar.style.width = "0%";
+      progressPercent.textContent = "0%";
+      progressPassed.textContent = "0 days passed";
+      progressLeft.textContent = totalDays + " days left";
+      progressStatus.textContent = "Not started yet";
+    } else if (passedDays >= totalDays) {
+      progressBar.style.width = "100%";
+      progressPercent.textContent = "100%";
+      progressPassed.textContent = totalDays + " days passed";
+      progressLeft.textContent = "0 days left";
+      progressStatus.textContent = "Completed";
+    } else {
+      var percent = Math.round((passedDays / totalDays) * 100);
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
+
+      progressBar.style.width = percent + "%";
+      progressPercent.textContent = percent + "%";
+      progressPassed.textContent = passedDays + " days passed";
+      progressLeft.textContent = leftDays + " days left";
+      progressStatus.textContent = "";
+    }
+  }
+
+  // ===== 初始化 =====
+  (function initFromURL() {
+    var params = new URLSearchParams(window.location.search);
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // 日期框默认填今天
+    startDateInput.value = toDateInputValue(today);
+
+    // URL 带了合法的 start 参数，才覆盖
+    var startParam = params.get("start");
+    if (startParam) {
+      var parsed = parseLocalDate(startParam);
+      if (parsed) startDateInput.value = toDateInputValue(parsed);
+    }
+
+    var daysParam = params.get("days");
+    if (daysParam !== null) {
+      var n = parseInt(daysParam, 10);
+      if (!isNaN(n)) {
+        if (n > MAX_DAYS) n = MAX_DAYS;
+        if (n < -MAX_DAYS) n = -MAX_DAYS;
+        daysInput.value = n;
+      }
+    }
+
+    // 初始化时如果 URL 里带了合法 start，就显示进度条；否则隐藏
+    var hasExplicitStart = !!parseLocalDate(params.get("start") || "");
+    recalculate(hasExplicitStart ? true : false);
+  })();
+
+  // ===== 事件绑定 =====
+  document.getElementById("calcBtn").addEventListener("click", function() {
+    recalculate();
+  });
+
+  daysInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") recalculate();
+  });
+
+  // 日期框一改就重算
+  startDateInput.addEventListener("change", function() {
+    recalculate();
+  });
+
+  // 如果用户手动清空了日期框，重置为今天
+  startDateInput.addEventListener("blur", function() {
+    if (!startDateInput.value) {
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      startDateInput.value = toDateInputValue(today);
+      recalculate();
+    }
+  });
+
+  [startDateInput, daysInput].forEach(function(el) {
+    el.addEventListener("focus", function() { el.style.borderColor = "var(--brand)"; });
+    el.addEventListener("blur", function() { el.style.borderColor = "var(--border-medium)"; });
+  });
+
+  // ===== 语言切换 =====
+  var langBtn = document.getElementById("langBtn");
+  var langDropdown = document.getElementById("langDropdown");
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      langDropdown.classList.toggle("show");
+    });
+    document.addEventListener("click", function(e) {
+      if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+        langDropdown.classList.remove("show");
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
